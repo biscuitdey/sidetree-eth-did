@@ -1,10 +1,10 @@
 import React from 'react';
 import * as ReactDOM from 'react-dom';
-import SidetreeApp from "../sidetree-client/app/sidetreeApp"
+import CreateWallet from "../sidetree-client/components/createWallet"
 
 ReactDOM.render(
 	<React.StrictMode>
-   	<SidetreeApp />
+   	<CreateWallet />
   	</React.StrictMode>,
 	document.getElementById('root')
 );

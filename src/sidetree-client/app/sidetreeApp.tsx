@@ -1,37 +1,28 @@
-import { Wallet } from "../keystore/wallet";
-import React, { useState } from "react";
+import { Wallet } from "../lib/keystore/wallet";
+import { publicKeyToJWK, canonicalizeJWK, convertToHashAndEncode } from "../lib/index";
 
 
-const wallet = new Wallet();
-const publicKey = wallet.generateKey();
+export class SidetreeApp {
 
-console.log(publicKey.toString("base64"))
-
-function SidetreeApp() {
-
-	//use State returns an array with 2 elements -> the current state value and a function to update the current state.
-	//If using object and need to update, get the old object elements using {...prevObject, update = old+1}
-	const [pKey, getNewPKey] = useState(() => {
+	public createWallet(): Buffer {
 		const wallet = new Wallet();
 		const publicKey = wallet.generateKey();
-		
-		return publicKey.toString("base64")	
-	})
 
-	function newPKey(){
-		
-		getNewPKey(() => {
-			const newPublicKey = wallet.generateKey();	
-			return newPublicKey.toString("base64")})
+		console.log(publicKey.toString("base64"))
 
+		return publicKey;
 	}
 
-	return(
-		<>	
-      		<h2>{pKey}</h2>
-		<button onClick= {newPKey}>Create New Key</button>
-		</>
-	);
+	public async generateCommitment() {
+		const publicKey = this.createWallet();
+		const publicKeyJWK = await publicKeyToJWK(publicKey)
+		const canonicalizedPublicKeyJWK = canonicalizeJWK(publicKeyJWK)
+		const revealValue = await convertToHashAndEncode(canonicalizedPublicKeyJWK)
+		const publicKeyCommitment = await convertToHashAndEncode(revealValue);
+		return publicKeyCommitment;	
+		
+	}
+
 }
 
 export default SidetreeApp;
